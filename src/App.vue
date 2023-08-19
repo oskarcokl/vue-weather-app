@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+      <h1>Weather app</h1>
     </div>
   </header>
 
+  <!-- Used for SPA application the route is displayed inside the routerview -->
   <RouterView />
 </template>
 
 <style scoped>
+
+h1 {
+  text-align: center;
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;
