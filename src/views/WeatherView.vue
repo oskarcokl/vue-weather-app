@@ -2,7 +2,7 @@
     <div class="container">
         <div>
             <div class="search-label">Search for city</div>
-            <input type="text" name="input" @keyup="debounceSearch" ref="input">
+            <input type="text" name="input" @input="debounceSearch" ref="input">
         </div>
         <div>
             <WeatherInfoItem name="Temperature" :value="temp"></WeatherInfoItem>
@@ -10,6 +10,11 @@
             <WeatherInfoItem name="Minimum temperature" :value="tempMin"></WeatherInfoItem>
             <WeatherInfoItem name="Maximum temperature" :value="tempMax"></WeatherInfoItem>
             <WeatherInfoItem name="Humidity" :value="humidity"></WeatherInfoItem>
+        </div>
+        <div>
+            <div  v-for="(city, index) in recentCities" :key="index">
+                <div>{{city}}</div>
+            </div>
         </div>
     </div>
 </template>
@@ -30,6 +35,7 @@ export default defineComponent({
             tempMax: -1,
             humidity: -1,
             debounceSearch: function(){},
+            recentCities: [] as string[],
         }
     },
     created() {
@@ -46,9 +52,16 @@ export default defineComponent({
         async search() {
             const inputElement = this.$refs.input as HTMLInputElement;
             const city = inputElement.value;
+            if (!city) {
+                // Invalid string or user probably deleted string. No need to
+                // search.
+                return;
+            }
+
             try {
                 // Info about city received
                 const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`);
+                this.addValidCity(city);
                 this.temp = res.data.main.temp;
                 this.feelsLike = res.data.main.feels_like;
                 this.tempMin = res.data.main.temp_min;
@@ -59,9 +72,20 @@ export default defineComponent({
                 console.log(e);
             }
         },
-        fahrenheitToCelsius(fahrenheit: number) {
-            return (fahrenheit - 32) / 1.8
-        }
+        addValidCity(city: string) {
+            if (this.recentCities.includes(city)) {
+                // No need to add city to recent searches if it is already there
+                // could have repeating values.
+                return;
+            }
+
+            this.recentCities.push(city);
+            if (this.recentCities.length > 5) {
+                this.recentCities.shift();
+            }
+
+            console.log(this.recentCities);
+        },
     }
 });
 </script>
@@ -77,20 +101,5 @@ export default defineComponent({
         align-items: center;
         flex-direction: column;
         row-gap: 30px;
-    }
-
-    .button {
-        display: inline-block;
-        background-color: #588157;
-        border-radius: 10px;
-        padding: 5px 10px;
-        margin: auto auto;
-        cursor: pointer;
-        color: white;
-        transition: background .5s;
-    }
-
-    .button:hover {
-        background-color: #a3b18a;
     }
 </style>
