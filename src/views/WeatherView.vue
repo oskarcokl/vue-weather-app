@@ -1,9 +1,8 @@
 <template >
     <div class="container">
-        <!-- <div class="button" @click="clickHandler">Show weather for Ljubljana</div> -->
         <div>
             <div class="search-label">Search for city</div>
-            <input type="text" name="input" @keyup="debounceSearch">
+            <input type="text" name="input" @keyup="debounceSearch" ref="input">
         </div>
         <div>
             <div>
@@ -40,17 +39,9 @@ export default defineComponent({
         }
     },
     created() {
-        this.debounceSearch = this.debounce(() => this.search(), 1000);
+        this.debounceSearch = this.debounce(() => this.search(), 500);
     },
     methods: {
-        async clickHandler() {
-            const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=Ljubljana&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`);
-            this.temp = res.data.main.temp;
-            this.feelsLike = res.data.main.feels_like;
-            this.tempMin = res.data.main.temp_min;
-            this.tempMax = res.data.main.temp_max;
-            this.humidity = res.data.main.humidity;
-        },
         debounce(func: Function, timeout = 300) {
             let timer: number;
             return () => {
@@ -58,8 +49,21 @@ export default defineComponent({
                 timer = setTimeout(() => { func(); }, timeout);
             }
         },
-        search() {
-            console.log('Searching for data');
+        async search() {
+            const inputElement = this.$refs.input as HTMLInputElement;
+            const city = inputElement.value;
+            try {
+                // Info about city received
+                const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`);
+                this.temp = res.data.main.temp;
+                this.feelsLike = res.data.main.feels_like;
+                this.tempMin = res.data.main.temp_min;
+                this.tempMax = res.data.main.temp_max;
+                this.humidity = res.data.main.humidity;
+            } catch (e) {
+                // Invalid city
+                console.log(e);
+            }
         },
         fahrenheitToCelsius(fahrenheit: number) {
             return (fahrenheit - 32) / 1.8
