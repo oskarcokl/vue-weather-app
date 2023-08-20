@@ -5,29 +5,23 @@
             <input type="text" name="input" @keyup="debounceSearch" ref="input">
         </div>
         <div>
-            <div>
-                Temperature: {{ temp }}
-            </div>
-            <div>
-                Feels like: {{ feelsLike }}
-            </div>
-            <div>
-                Minimum temperature: {{ tempMin }}
-            </div>
-            <div>
-                Maximum temperature: {{ tempMax }}
-            </div>
-            <div>
-                Humidity: {{ humidity }}
-            </div>
+            <WeatherInfoItem name="Temperature" :value="temp"></WeatherInfoItem>
+            <WeatherInfoItem name="Feels like" :value="feelsLike"></WeatherInfoItem>
+            <WeatherInfoItem name="Minimum temperature" :value="tempMin"></WeatherInfoItem>
+            <WeatherInfoItem name="Maximum temperature" :value="tempMax"></WeatherInfoItem>
+            <WeatherInfoItem name="Humidity" :value="humidity"></WeatherInfoItem>
         </div>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios from 'axios';
+import WeatherInfoItem from '@/components/WeatherInfoItem.vue';
 
 export default defineComponent({
+    components: {
+        WeatherInfoItem
+    },
     data() {
         return {
             temp: -1,
@@ -71,7 +65,7 @@ export default defineComponent({
     }
 });
 </script>
-<style>
+<style scoped>
     .search-label {
         text-align: center;
     }
