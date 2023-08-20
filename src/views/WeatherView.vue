@@ -2,7 +2,7 @@
     <div class="container">
         <div>
             <div class="search-label">Search for city</div>
-            <input type="text" name="input" @input="debounceSearch" ref="input">
+            <input type="text" name="input" @input="debounceInputChange" ref="input">
         </div>
         <div>
             <WeatherInfoItem name="Temperature" :value="temp"></WeatherInfoItem>
@@ -13,7 +13,7 @@
         </div>
         <div>
             <div  v-for="(city, index) in recentCities" :key="index">
-                <div>{{city}}</div>
+                <div class="recent-city" @click="cityClick(city)">{{city}}</div>
             </div>
         </div>
     </div>
@@ -34,14 +34,19 @@ export default defineComponent({
             tempMin: -1,
             tempMax: -1,
             humidity: -1,
-            debounceSearch: function(){},
+            debounceInputChange: function(){},
             recentCities: [] as string[],
         }
     },
     created() {
-        this.debounceSearch = this.debounce(() => this.search(), 500);
+        this.debounceInputChange = this.debounce(() => this.handleInputChange(), 500);
     },
     methods: {
+        cityClick(city: string) {
+            const inputElement = this.$refs.input as HTMLInputElement;
+            inputElement.value = city;
+            this.search(city);
+        },
         debounce(func: Function, timeout = 300) {
             let timer: number;
             return () => {
@@ -49,9 +54,12 @@ export default defineComponent({
                 timer = setTimeout(() => { func(); }, timeout);
             }
         },
-        async search() {
+        handleInputChange() {
             const inputElement = this.$refs.input as HTMLInputElement;
             const city = inputElement.value;
+            this.search(city);
+        },
+        async search(city: string) {
             if (!city) {
                 // Invalid string or user probably deleted string. No need to
                 // search.
@@ -83,8 +91,6 @@ export default defineComponent({
             if (this.recentCities.length > 5) {
                 this.recentCities.shift();
             }
-
-            console.log(this.recentCities);
         },
     }
 });
@@ -92,6 +98,10 @@ export default defineComponent({
 <style scoped>
     .search-label {
         text-align: center;
+    }
+
+    .recent-city {
+        cursor: pointer;
     }
 
     .container {
