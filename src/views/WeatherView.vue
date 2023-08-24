@@ -1,19 +1,20 @@
 <template >
-    <div class="container">
-        <div>
-            <div class="search-label">Search for city</div>
-            <input type="text" name="input" @input="debounceInputChange" ref="input">
+    <div class="flex flex-col items-center gap-4 mt-4">
+        <div class="flex flex-col items-center">
+            <div class="mx-auto text-2xl">Search for city</div>
+            <input type="text" class="border" name="input" @input="debounceInputChange" ref="input">
         </div>
-        <div>
-            <WeatherInfoItem name="Temperature" :value="temp"></WeatherInfoItem>
-            <WeatherInfoItem name="Feels like" :value="feelsLike"></WeatherInfoItem>
-            <WeatherInfoItem name="Minimum temperature" :value="tempMin"></WeatherInfoItem>
-            <WeatherInfoItem name="Maximum temperature" :value="tempMax"></WeatherInfoItem>
-            <WeatherInfoItem name="Humidity" :value="humidity"></WeatherInfoItem>
+        <div v-if="recentCities.length > 0">
+            <WeatherInfoItem name="Temperature" :value="temp + ' &deg;C'"></WeatherInfoItem>
+            <WeatherInfoItem name="Feels like" :value="feelsLike + ' &deg;C'"></WeatherInfoItem>
+            <WeatherInfoItem name="Minimum temperature" :value="tempMin + ' &deg;C'"></WeatherInfoItem>
+            <WeatherInfoItem name="Maximum temperature" :value="tempMax + ' &deg;C'"></WeatherInfoItem>
+            <WeatherInfoItem name="Humidity" :value="humidity + ' %'"></WeatherInfoItem>
         </div>
-        <div>
+        <div v-if="recentCities.length > 0" class="flex flex-col items-center mt-3">
+            <h1 class="text-2xl">Recent cities</h1>
             <div  v-for="(city, index) in recentCities" :key="index">
-                <div class="recent-city" @click="cityClick(city)">{{city}}</div>
+                <div class="cursor-pointer" @click="cityClick(city)">{{city}}</div>
             </div>
         </div>
     </div>
@@ -95,21 +96,3 @@ export default defineComponent({
     }
 });
 </script>
-<style scoped>
-    .search-label {
-        text-align: center;
-    }
-
-    .recent-city {
-        cursor: pointer;
-    }
-
-    .container {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        flex-direction: column;
-        row-gap: 30px;
-    }
-</style>
